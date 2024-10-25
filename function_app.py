@@ -3,6 +3,7 @@ import logging
 import os
 import requests
 import openai
+import time
 
 # Azure Functionsアプリケーションのエントリポイント
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -14,6 +15,13 @@ openai.api_key = os.getenv('OPENAI_KEY')
 openai.azure_endpoint = os.getenv('OPENAI_ENDPOINT')  # Azure OpenAIのエンドポイント
 openai.api_type = 'azure'
 openai.api_version = '2023-08-01-preview'
+
+
+# APIキーとエンドポイントが設定されているかチェック
+if not COMPUTER_VISION_KEY or not COMPUTER_VISION_ENDPOINT:
+    raise ValueError("Computer Vision APIのキーまたはエンドポイントが設定されていません。")
+if not openai.api_key or not openai.azure_endpoint:
+    raise ValueError("OpenAI APIのキーまたはエンドポイントが設定されていません。")
 
 
 # HTTPトリガー関数
@@ -58,6 +66,13 @@ def http_trigger(req: func.HttpRequest) -> func.HttpResponse:
                 # 完了ステータスか確認
                 if ocr_result['status'] in ['succeeded', 'failed']:
                     break
+                
+                else:
+                # ステータスがまだ存在しない場合
+                    print("ステータスが未設定。再試行中...")
+
+            # 少し待機してから再試行 (3秒待つ)
+                time.sleep(3)
 
             if ocr_result['status'] == 'succeeded':
                 # 抽出されたテキストの組み立て
@@ -66,33 +81,35 @@ def http_trigger(req: func.HttpRequest) -> func.HttpResponse:
                     for line in read_result["lines"]:
                         extracted_text += line["text"] + "\n"
 
-                logging.info(f"Extracted text: {extracted_text}")
+                logging.info(f"抽出されたテキスト: {extracted_text}")
 
                 # OpenAI APIを使用してテキストを訂正
                 response = openai.chat.completions.create(
                     model="gpt-35-turbo",
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "user", "content": f"以下の文章をより詳細にし、その背景も述べてください。:\n{extracted_text}"}
+                        {"role": "system", "content": "あなたは親切なアシスタントです。"},
+                        {"role": "user", "content": f"以下の文章を修正してください。:\n{extracted_text}"}
                     ],
-                    temperature=0.3,
+                    temperature=0.4,
                     max_tokens=1000
                 )
 
                 corrected_text = response.choices[0].message.content.strip()
 
                 # 訂正後のテキストを返却
-                return func.HttpResponse(f"Corrected Text:\n{corrected_text}", mimetype="text/plain")
+                return func.HttpResponse(
+                f"修正されたテキスト: {corrected_text}",
+                mimetype="text/plain",
+                status_code=200)
+
 
             else:
-                return func.HttpResponse("Failed to analyze image.", status_code=500)
+                return func.HttpResponse("画像解析に失敗しました.", status_code=500)
 
         except requests.exceptions.RequestException as e:
-            logging.error(f"Error calling the Computer Vision API: {e}")
-            return func.HttpResponse(f"Error processing image: {e}", status_code=500)
+            logging.error(f"Computer Vision APIの呼び出し中にエラーが発生しました。: {e}")
+            return func.HttpResponse(f"画像処理中にエラーが発生しました。: {e}", status_code=500)
 
-    else:
-        return func.HttpResponse(
-            "Please pass an image_url in the query string or in the request body.",
-            status_code=400
-        )
+        except openai.OpenAIError as e:
+            logging.error(f"OpenAI APIの呼び出し中にエラーが発生しました: {e}")
+            return func.HttpResponse(f"OpenAI APIでエラーが発生しました: {e}", status_code=500)
