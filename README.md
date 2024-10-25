@@ -2,6 +2,7 @@
 
 このプロジェクトは、Azure Functionsを使用してAzure Computer Vision APIで画像を解析し、抽出されたテキストをAzure OpenAI APIで処理・修正するワークフローを実現します。
 
+
 ## 目次
 
 1. [プロジェクト概要](#プロジェクト概要)
@@ -13,9 +14,11 @@
 7. [エラーハンドリング](#エラーハンドリング)
 8. [ライセンス](#ライセンス)
 
+
 ## プロジェクト概要
 
 このプロジェクトは、Azure Computer Vision APIを使用して画像からテキストを抽出し、Azure OpenAI APIを使ってそのテキストを修正する、Azure Functionsを用いたサーバーレスアプリケーションです。
+
 
 ## 前提条件
 
@@ -29,9 +32,10 @@
 - **VSCode**
 - **Azure CLI**
 
-### 環境構築
 
-#### 仮想環境の構築と必要なライブラリにインストール
+## 環境構築
+
+### 仮想環境の構築と必要なライブラリにインストール
 ```
 pyenv local 3.10.15
 python -m venv .venv
@@ -39,7 +43,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### local_settings.jsonで環境変数の設定
+### local_settings.jsonで環境変数の設定
 ```
 {
   "IsEncrypted": false,
