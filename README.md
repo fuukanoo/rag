@@ -54,7 +54,10 @@ pip install -r requirements.txt
     "COMPUTER_VISION_KEY": "your_computer_vision_key",
     "COMPUTER_VISION_ENDPOINT": "your_computer_vision_endpoint",
     "OPENAI_KEY": "your_openai_key,
-    "OPENAI_ENDPOINT": "your_openai_endpoint"
+    "OPENAI_ENDPOINT": "your_openai_endpoint",
+    "DOCUMENT_INTELLIGENCE_KEY":your_document_intelligence_key",
+    "DOCUMENT_INTELLIGENCE_ENDPOINT":"your_document_intelligence_endpoint",
+    "BLOB_STORAGE_CONNECTION_STRING":"your_blob_storage_connection_string"
   }
 }
 ```
