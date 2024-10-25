@@ -19,7 +19,7 @@
 
 ## 前提条件
 
-このプロジェクトを動かすために必要なツールやリソース:
+このプロジェクトを動かすために必要なツールやリソース
 
 - **Azure サブスクリプション**
 - **Azure Functions Core Tools**
@@ -28,3 +28,28 @@
 - **Python 3.10
 - **VSCode**
 - **Azure CLI**
+
+##環境構築
+
+###仮想環境の構築と必要なライブラリにインストール
+'''
+pyenv local 3.10.15
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+'''
+
+###local_settings.jsonで環境変数の設定
+'''
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "COMPUTER_VISION_KEY": "your_computer_vision_key",
+    "COMPUTER_VISION_ENDPOINT": "your_computer_vision_endpoint",
+    "OPENAI_KEY": "your_openai_key,
+    "OPENAI_ENDPOINT": "your_openai_endpoint"
+  }
+}
+'''
