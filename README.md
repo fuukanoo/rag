@@ -24,7 +24,7 @@
 - **Azure Functions Core Tools**
 - **Azure Computer Vision API**
 - **Azure OpenAI API**
-- **Python 3.10
+- **Python 3.10**
 - **VSCode**
 - **Azure CLI**
 
