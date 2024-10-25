@@ -33,7 +33,7 @@ def http_trigger(req: func.HttpRequest) -> func.HttpResponse:
 
     if image_url:
         # OCR APIのURL
-        ocr_url = f"{COMPUTER_VISION_ENDPOINT}/vision/v3.2/text/ocr"
+        ocr_url = f"{COMPUTER_VISION_ENDPOINT}/vision/v3.2/read/analyze"
 
         headers = {
             'Ocp-Apim-Subscription-Key': COMPUTER_VISION_KEY,
