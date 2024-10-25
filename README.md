@@ -32,15 +32,15 @@
 ##環境構築
 
 ###仮想環境の構築と必要なライブラリにインストール
-'''
+```
 pyenv local 3.10.15
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-'''
+```
 
 ###local_settings.jsonで環境変数の設定
-'''
+```
 {
   "IsEncrypted": false,
   "Values": {
@@ -52,4 +52,4 @@ pip install -r requirements.txt
     "OPENAI_ENDPOINT": "your_openai_endpoint"
   }
 }
-'''
+```
