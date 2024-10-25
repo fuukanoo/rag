@@ -67,4 +67,5 @@ func start
 ```
 
 上記のコマンドの実行でサーバーを立ち上げます。<br>
+
 Google ChromeやMicrosoft Edgeなどのurlの部分に http://localhost:7071/api/http_trigger?image_url={画像のurl} とすることで画像内のテキストを抽出し、修正された文章の表示ができます。
