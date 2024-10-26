@@ -18,11 +18,13 @@ from ppt_processor import ppt_processor
 #document_intelligence_key = os.getenv("DOCUMENT_INTELLIGENCE_API_KEY")
 #document_intelligence_endpoint = os.getenv("DOCUMENT_INTELLIGENCE_ENDPOINT")
 blob_storage_connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-blob_storage_container = os.getenv("BLOB_CONTAINER")
+blob_storage_container = "container-rag-dev"
 openai.api_key = os.getenv("AZURE_OPENAI_API_KEY")
 openai.azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")  
 openai.api_type = "azure"
 openai.api_version = "2023-05-15"
+
+
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -45,32 +47,32 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     return func.HttpResponse(improved_text, status_code=200)
 
 
-@app.route(route="improve_text")
+
 def improve_text(text):
     
-    prompt = (f"以下の文章で誤りがあれば訂正してください、ない場合は元の文章を返却してください:\n{text}")
+    prompt = (f"以下の文章で誤りがあれば訂正してください、ない場合は元の文章を返却してください。:\n{text}")
 
     try:
         response = openai.chat.completions.create(
             model="gpt-35-turbo",
             messages=[
-                {"role": "system", "content": "You are a helpful assistant "},
+                {"role": "system", "content": "あなたはとても親切なアシスタントです。"},
                 {"role": "user", "content": prompt},
             ],
             max_tokens=1000,
             temperature=0.4,
         )
-        message_content = response.choices[0].message.content.strip()
-        return message_content
+        response_text = response.choices[0].message.content.strip()
+        return response_text
 
     except openai.OpenAIError as e:
         return f"Error during OpenAI request: {e}"
 
 
-@app.route(route="extract_text")
-def extract_text(blob_container, blob_name):
+
+def extract_text(blob_storage_container, blob_name):
     blob_service_client = BlobServiceClient.from_connection_string(blob_storage_connection_string)
-    blob_client = blob_service_client.get_blob_client(container=blob_container, blob=blob_name)
+    blob_client = blob_service_client.get_blob_client(container=blob_storage_container, blob=blob_name)
 
     try:
         blob_data = blob_client.download_blob().readall()
