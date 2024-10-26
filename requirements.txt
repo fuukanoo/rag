@@ -3,3 +3,12 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
+requests
+openai
+azure-storage-blob
+azure-ai-formrecognizer
+Pillow
+pytesseract
+docx
+python-pptx
+pandas
