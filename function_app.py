@@ -5,20 +5,21 @@ from azure.storage.blob import BlobServiceClient
 import logging
 import mimetypes
 
-# 各ファイルタイプに応じたプロセッサをインポート
+
 from image_processor import image_processor
 from pdf_processor import pdf_processor
 from word_processor import word_processor
 from excel_processor import excel_processor
 from ppt_processor import ppt_processor
 
-# 環境変数から設定を取得
-blob_storage_connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+
+blob_storage_connection_string = os.getenv("BLOB_STORAGE_CONNECTION_STRING")
 blob_storage_container = "container-rag-dev"
-openai.api_key = os.getenv("AZURE_OPENAI_API_KEY")
-openai.azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+openai.api_key = os.getenv("OPENAI_KEY")
+openai.azure_endpoint = os.getenv("OPENAI_ENDPOINT")
 openai.api_type = "azure"
 openai.api_version = "2023-05-15"
+
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -49,10 +50,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
 def improve_text(text):
     
-    prompt = (f"以下の文章で誤りがあれば訂正してください、ない場合は元の文章を返却してください。:\n{text}")
+    prompt = (f"以下の文章を返却してください。:\n{text}")
 
     try:
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-35-turbo",
             messages=[
                 {"role": "system", "content": "あなたはとても親切なアシスタントです。"},
