@@ -1,6 +1,6 @@
-# Azure Computer Vision、Azure OpenAIによる画像解析とテキスト抽出プロジェクト
+# Azure OpenAIによる画像、ドキュメント内のテキスト抽出プロジェクト
 
-このプロジェクトは、Azure Functionsを使用してAzure Computer Vision APIで画像を解析し、抽出されたテキストをAzure OpenAI APIで処理・修正するワークフローを実現します。
+このプロジェクトは、Azure Functionsを使用して画像、ドキュメント内から抽出されたテキストをAzure OpenAI APIで処理・修正するワークフローを実現します。
 
 
 ## 目次
@@ -71,4 +71,4 @@ func start
 
 上記のコマンドの実行でサーバーを立ち上げます。<br>
 
-Google ChromeやMicrosoft Edgeなどのurlの部分に http://localhost:7071/api/http_trigger?image_url={画像のurl} とすることで画像内のテキストを抽出し、修正された文章の表示ができます。
+POSTMANを使い、JSON形式でファイルの指定をすることで画像、ドキュメント内のテキストを抽出し、修正された文章の表示ができます。
