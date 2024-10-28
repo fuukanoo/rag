@@ -50,7 +50,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
 def improve_text(text):
     
-    prompt = (f"以下の文章を返却してください。:\n{text}")
+    prompt = (f"以下の文章を修正し、返却してください。:\n{text}")
 
     try:
         response = openai.chat.completions.create(
