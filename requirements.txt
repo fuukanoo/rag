@@ -9,7 +9,9 @@ azure-storage-blob
 azure-ai-formrecognizer
 Pillow
 pytesseract
-PyMuPDF
+pdfplumber
+pdfminer.six
 python-docx
 pandas
 python-pptx
+pdf2image

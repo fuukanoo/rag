@@ -13,12 +13,12 @@ from excel_processor import excel_processor
 from ppt_processor import ppt_processor
 
 
-blob_storage_connection_string = os.getenv("BLOB_STORAGE_CONNECTION_STRING")
-blob_storage_container = "container-rag-dev"
 openai.api_key = os.getenv("OPENAI_KEY")
 openai.azure_endpoint = os.getenv("OPENAI_ENDPOINT")
 openai.api_type = "azure"
 openai.api_version = "2023-05-15"
+blob_storage_connection_string = os.getenv("BLOB_STORAGE_CONNECTION_STRING")
+blob_storage_container = "container-rag-dev"
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -41,6 +41,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(f"Error extracting text: {extracted_text}", status_code=500)
 
     improved_text = improve_text(extracted_text)
+    
     if improved_text.startswith("Error"):
         return func.HttpResponse(f"Error improving text: {improved_text}", status_code=500)
 
@@ -48,31 +49,32 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     return func.HttpResponse(improved_text, status_code=200, mimetype="text/plain")
 
 
-def improve_text(text):
-    
-    prompt = (f"以下の文章を修正し、返却してください。:\n{text}")
+def improve_text(text, chunk_size=5000):
+    chunks = [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
+    combined_response_text = ""
 
-    try:
-        response = openai.chat.completions.create(
-            model="gpt-35-turbo",
-            messages=[
-                {"role": "system", "content": "あなたはとても親切なアシスタントです。"},
-                {"role": "user", "content": prompt},
-            ],
-            max_tokens=1000,
-            temperature=0.4,
-        )
-        response_text = response.choices[0].message.content.strip()
-        return response_text
+    for chunk in chunks:
+        prompt = f"以下の文章を修正してください。:\n{chunk}"
+        
+        try:
+            response = openai.chat.completions.create(
+                model="gpt-35-turbo",
+                messages=[
+                    {"role": "system", "content": "あなたはとても親切なアシスタントです。"},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=1000,
+                temperature=0.4,
+            )
+            response_text = response.choices[0].message.content.strip()
+            combined_response_text += response_text + "\n"
+        
+        except openai.OpenAIError as e:
+            return f"Error during OpenAI request: {e}"
 
-    except openai.OpenAIError as e:
-        return f"Error during OpenAI request: {e}"
-
+    return combined_response_text
 
 def extract_text(blob_storage_container, blob_name):
-    """
-    Azure Blob Storageからファイルを取得し、ファイルタイプに応じてテキストを抽出する関数
-    """
     blob_service_client = BlobServiceClient.from_connection_string(blob_storage_connection_string)
     blob_client = blob_service_client.get_blob_client(container=blob_storage_container, blob=blob_name)
 
